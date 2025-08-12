@@ -4,10 +4,8 @@ import api from '../api/axios'
 const AuthContext = createContext(undefined)
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem('token'))
-  const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('user')) } catch { return null }
-  })
+  const [token, setToken] = useState(null)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     if (token) localStorage.setItem('token', token)
@@ -39,7 +37,7 @@ export function AuthProvider({ children }) {
   const value = useMemo(() => ({ token, user, login, register, logout }), [token, user])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
-
+//use useAuth() in each component and pages  
 export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth must be used within AuthProvider')

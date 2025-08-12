@@ -14,16 +14,13 @@ export default function Users() {
   const { data: users = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
-    enabled: !!token, // تا وقتی لاگین نیستیم فراخوانی نشود
+    enabled: !!token, 
   })
 
-  useEffect(() => {
-    if (token) refetch() // بعد از لاگین، یک بار دیگر بگیر
-  }, [token])
+  
 
-  if (!token) return <div className="card"><p className="error">اول وارد شوید</p></div>
-  if (isLoading) return <div className="card"><p>در حال بارگذاری…</p></div>
-  if (isError)   return <div className="card"><p className="error">{error?.message || 'خطا در دریافت کاربران'}</p></div>
+  if (isLoading) return <div className="card"><p>loading ...</p></div>
+  if (isError)   return <div className="card"><p className="error">{error?.message || 'error'}</p></div>
 
   return (
     <div className="card">
@@ -32,7 +29,7 @@ export default function Users() {
         <p>هنوز کاربری ثبت نشده است.</p>
       ) : (
         <table className="table">
-          <thead><tr><th>ID</th><th>نام کاربری</th><th>ایمیل</th><th>تاریخ</th></tr></thead>
+          <thead><tr><th>ID</th><th>user name </th><th>email</th><th>time creation</th></tr></thead>
           <tbody>
             {users.map(u => (
               <tr key={u.id}>

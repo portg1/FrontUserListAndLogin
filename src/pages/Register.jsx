@@ -1,22 +1,21 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 export default function Register() {
-  const { setToken, setUser } = useAuth()
+  const { register } = useAuth() 
   const [userName, setUserName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  
+  const navigate = useNavigate()
 
-  const qc = useQueryClient()
   const registerMutation = useMutation({
-    mutationFn: (payload) => api.post('/api/auth/register', payload).then(r => r.data),
-    onSuccess: (data) => {
-      setToken(data.token)
-      setUser(data.user)
-      qc.invalidateQueries({ queryKey: ['users'] })
-      window.location.href = '/users'
+    mutationFn: ({ userName, email, password }) =>
+      register(userName, email, password), 
+    onSuccess: () => {
+      navigate('/users')
     }
   })
 
@@ -27,24 +26,24 @@ export default function Register() {
 
   return (
     <div className="card">
-      <h2>ثبت‌نام</h2>
+      <h2>singup</h2>
       <form onSubmit={onSubmit} className="form">
-        <label>نام کاربری
+        <label>user name
           <input value={userName} onChange={e => setUserName(e.target.value)} required />
         </label>
-        <label>ایمیل
+        <label>email
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
         </label>
-        <label>رمز عبور
+        <label>password
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
         </label>
 
         {registerMutation.isError && (
-          <p className="error">{registerMutation.error?.response?.data?.message || 'ثبت‌نام ناموفق بود'}</p>
+          <p className="error">register unsuccess</p>
         )}
 
         <button type="submit" disabled={registerMutation.isLoading}>
-          {registerMutation.isLoading ? '...' : 'ساخت حساب'}
+          {registerMutation.isLoading ? '...' : 'signup'}
         </button>
       </form>
     </div>
