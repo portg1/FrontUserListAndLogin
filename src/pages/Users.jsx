@@ -24,9 +24,9 @@ export default function Users() {
 
   return (
     <div className="card">
-      <h2>کاربران</h2>
+      <h2>users</h2>
       {users.length === 0 ? (
-        <p>هنوز کاربری ثبت نشده است.</p>
+        <p>username not correct</p>
       ) : (
         <table className="table">
           <thead><tr><th>ID</th><th>user name </th><th>email</th><th>time creation</th></tr></thead>
