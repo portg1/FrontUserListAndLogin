@@ -28,7 +28,7 @@ export default function Register() {
     <div className="card">
       <h2>singup</h2>
       <form onSubmit={onSubmit} className="form">
-        <label>user name
+        <label>UserName
           <input value={userName} onChange={e => setUserName(e.target.value)} required />
         </label>
         <label>email

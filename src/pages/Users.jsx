@@ -26,7 +26,7 @@ export default function Users() {
     <div className="card">
       <h2>users</h2>
       {users.length === 0 ? (
-        <p>username not correct</p>
+        <p>not found</p>
       ) : (
         <table className="table">
           <thead><tr><th>ID</th><th>user name </th><th>email</th><th>time creation</th></tr></thead>

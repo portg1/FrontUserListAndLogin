@@ -26,7 +26,7 @@ export default function Login() {
     <div className="card">
       <h2>login</h2>
       <form onSubmit={onSubmit} className="form">
-        <label>user name or email
+        <label>UserName or email
           <input value={emailOrUserName} onChange={e => setEmailOrUserName(e.target.value)} required />
         </label>
         <label>password
