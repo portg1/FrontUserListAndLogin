@@ -1,45 +1,73 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+// store/useAuthStore.js
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import api from '../api/axios'
 
-const AuthContext = createContext(undefined)
+const useAuthStore = create(
+  persist(
+    (set, get) => ({
+      token: null,
+      user: null,
+      loading: false,
 
-export function AuthProvider({ children }) {
-  const [token, setToken] = useState(null)
-  const [user, setUser] = useState(null)
+      login: async (emailOrUserName, password) => {
+        set({ loading: true })
+        try {
+          const { data } = await api.post('/api/auth/login', { emailOrUserName, password })
+          set({ token: data.token, user: data.user })
+          api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+          return data
+        } catch (err) {
+          console.error('Login failed:', err)
+          throw err.response?.data?.message || 'Login failed'
+        } finally {
+          set({ loading: false })
+        }
+      },
 
-  useEffect(() => {
-    if (token) localStorage.setItem('token', token)
-    else localStorage.removeItem('token')
-  }, [token])
+      register: async (userName, email, password) => {
+        set({ loading: true })
+        try {
+          const { data } = await api.post('/api/auth/register', { userName, email, password })
+          set({ token: data.token, user: data.user })
+          api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+          return data
+        } catch (err) {
+          console.error('Register failed:', err)
+          throw err.response?.data?.message || 'Register failed'
+        } finally {
+          set({ loading: false })
+        }
+      },
 
-  useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user))
-    else localStorage.removeItem('user')
-  }, [user])
+      logout: () => {
+        set({ token: null, user: null })
+        delete api.defaults.headers.common['Authorization']
+      },
+    }),
+    {
+      name: 'auth-storage', // کلید localStorage
+      partialize: (state) => ({ token: state.token, user: state.user }), // فقط اینا ذخیره می‌شن
+    }
+  )
+)
 
-  const login = async (emailOrUserName, password) => {
-    const { data } = await api.post('/api/auth/login', { emailOrUserName, password })
-    setToken(data.token)
-    setUser(data.user)
+// 🔄 افزودن interceptor برای logout در صورت 401
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      const logout = useAuthStore.getState().logout
+      logout()
+    }
+    return Promise.reject(err)
   }
+)
 
-  const register = async (userName, email, password) => {
-    const { data } = await api.post('/api/auth/register', { userName, email, password })
-    setToken(data.token)
-    setUser(data.user)
-  }
-
-  const logout = () => {
-    setToken(null)
-    setUser(null)
-  }
-
-  const value = useMemo(() => ({ token, user, login, register, logout }), [token, user])
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+// ⬇️ تنظیم توکن هنگام mount اولیه (در صورت موجود بودن در localStorage)
+const { token } = useAuthStore.getState()
+if (token) {
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
-//use useAuth() in each component and pages  
-export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
-}
+
+export default useAuthStore

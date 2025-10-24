@@ -6,8 +6,8 @@ export default function NavBar() {
   return (
     <nav style={{ display: 'flex', gap: 12, padding: 12, borderBottom: '1px solid #ddd' }}>
       <Link to="/">Home</Link>
-      {!user && <Link to="/register">Register</Link>}
-      {!user && <Link to="/login">Login</Link>}
+      {!user && <Link to="/sign-up">Register</Link>}
+      {!user && <Link to="/sign-in">Login</Link>}
       <Link to="/users">Users</Link>
       <div style={{ marginLeft: 'auto' }}>
         {user ? (

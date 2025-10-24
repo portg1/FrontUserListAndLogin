@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import api from '../api/axios'
-import { useAuth } from '../context/AuthContext'
+import { useAuthStore } from '../context/AuthContext'
 
 const fetchUsers = async () => {
   const { data } = await api.get('/api/users')
@@ -9,7 +9,7 @@ const fetchUsers = async () => {
 }
 
 export default function Users() {
-  const { token } = useAuth()
+  const { token } = useAuthStore()
 
   const { data: users = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['users'],
