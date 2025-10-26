@@ -1,4 +1,4 @@
-// store/useAuthStore.js
+// src/store/useAuthStore.js
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import api from '../api/axios'
@@ -46,13 +46,12 @@ const useAuthStore = create(
       },
     }),
     {
-      name: 'auth-storage', // کلید localStorage
-      partialize: (state) => ({ token: state.token, user: state.user }), // فقط اینا ذخیره می‌شن
+      name: 'auth-storage',
+      partialize: (state) => ({ token: state.token, user: state.user }),
     }
   )
 )
 
-// 🔄 افزودن interceptor برای logout در صورت 401
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -64,7 +63,6 @@ api.interceptors.response.use(
   }
 )
 
-// ⬇️ تنظیم توکن هنگام mount اولیه (در صورت موجود بودن در localStorage)
 const { token } = useAuthStore.getState()
 if (token) {
   api.defaults.headers.common['Authorization'] = `Bearer ${token}`

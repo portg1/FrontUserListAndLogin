@@ -1,32 +1,37 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import useAuthStore from './store/useAuthStore'
+
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Users from './pages/Users'
 import PostsPage from './pages/Posts'
-import SignIn from '../sign-in/SignIn'
-import SignUp from '../sign-up/SignUp'
-
-import NavBar from './components/NavBar'
+import ProtectedRoute from './components/ProtectedRoute' // ✅ مسیر صحیح برای روت محافظت‌شده
 import './styles.css'
 
 export default function App() {
   return (
-    
-      <BrowserRouter>
-        <Routes>
-          {/* public app routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/posts" element={<PostsPage />} />
-          <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/sign-up" element={<SignUp />} />
+    <BrowserRouter>
+      <Routes>
+        {/* مسیرهای عمومی */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        </Routes>
-      </BrowserRouter>
+        {/* مسیر محافظت‌شده */}
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* سایر صفحات */}
+        <Route path="/posts" element={<PostsPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

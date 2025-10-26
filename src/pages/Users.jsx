@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import api from '../api/axios'
-import { useAuthStore } from '../context/AuthContext'
+import useAuthStore from '../store/useAuthStore'
 
 const fetchUsers = async () => {
   const { data } = await api.get('/api/users')
