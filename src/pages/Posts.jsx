@@ -1,57 +1,118 @@
 // src/pages/PostsPage.jsx
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-//const axios = require(axios)
-async function getPostsAxios(){
-const response = axios.get('https://jsonplaceholder.typicode.com/posts')
-console.log((await response).data);
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import styled from "styled-components";
+import {
+  Wrapper,
+  Title,
+  SubTitle,
+  GlassTable,
+  TH,
+  TD,
+  TR,
+  Section,
+  Centered,
+} from '../styles/PostsPage.styles'
 
-}
-//getPostsAxios();
 
 const api = axios.create({
-  baseURL: 'https://jsonplaceholder.typicode.com/posts'
-})
-
-const post =async  () => {
-
-  const {data} =await api.get();
-  return data;
-}
-
-(async () =>{
-
-  console.log(await post());
-})()
-
-
+  baseURL: "https://BrsApi.ir/Api/Market/",
+});
 
 async function getPosts() {
-  const res = await fetch('https://jsonplaceholder.typicode.com/posts')
-  if (!res.ok) throw new Error('Failed to fetch posts')
-  return res.json()
+  const { data } = await api.get(
+    "Gold_Currency.php?key=BYRgf2q2MNrbQxsqI82btiE8Gse563ue"
+  );
+  return data;
 }
 
 export default function PostsPage() {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['posts'],
+    queryKey: ["posts"],
     queryFn: getPosts,
-  })
+  });
 
-  if (isLoading) return <div>isLoading</div>
-  if (isError) return <div>error {error.message}</div>
+  if (isLoading) return <Centered>در حال بارگذاری...</Centered>;
+  if (isError) return <Centered>خطا: {error.message}</Centered>;
 
   return (
-    <div style={{ maxWidth: 800, margin: '24px auto', padding: 16 }}>
-      <h1 style={{ marginBottom: 16 }}>posts</h1>
-      <ul style={{ display: 'grid', gap: 12, listStyle: 'none', padding: 0 }}>
-        {data.map(p => (
-          <li key={p.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
-            <h3 style={{ margin: '0 0 8px' }}>{p.id}. {p.title}</h3>
-            <p style={{ margin: 0, lineHeight: 1.7 }}>{p.body}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+    <Wrapper>
+      <Title>💰 قیمت طلا و ارز</Title>
+
+      {data.gold && (
+        <Section>
+          <SubTitle>🏆 طلا</SubTitle>
+          <GlassTable>
+            <thead>
+              <tr>
+                <TH>نام</TH>
+                <TH>قیمت</TH>
+                <TH>تغییر</TH>
+                <TH>درصد</TH>
+                <TH>تاریخ</TH>
+                <TH>زمان</TH>
+              </tr>
+            </thead>
+            <tbody>
+              {data.gold.map((item) => (
+                <TR key={item.symbol}>
+                  <TD>{item.name}</TD>
+                  <TD>{item.price.toLocaleString()} {item.unit}</TD>
+                  <TD
+                    style={{
+                      color: item.change_value >= 0 ? "#4ade80" : "#f87171",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {item.change_value.toLocaleString()}
+                  </TD>
+                  <TD>{item.change_percent}%</TD>
+                  <TD>{item.date}</TD>
+                  <TD>{item.time}</TD>
+                </TR>
+              ))}
+            </tbody>
+          </GlassTable>
+        </Section>
+      )}
+
+      {data.currency && (
+        <Section>
+          <SubTitle>💵 ارز</SubTitle>
+          <GlassTable>
+            <thead>
+              <tr>
+                <TH>نام</TH>
+                <TH>قیمت</TH>
+                <TH>تغییر</TH>
+                <TH>درصد</TH>
+                <TH>تاریخ</TH>
+                <TH>زمان</TH>
+              </tr>
+            </thead>
+            <tbody>
+              {data.currency.map((item) => (
+                <TR key={item.symbol}>
+                  <TD>{item.name}</TD>
+                  <TD>{item.price.toLocaleString()} {item.unit}</TD>
+                  <TD
+                    style={{
+                      color: item.change_value >= 0 ? "#4ade80" : "#f87171",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {item.change_value.toLocaleString()}
+                  </TD>
+                  <TD>{item.change_percent}%</TD>
+                  <TD>{item.date}</TD>
+                  <TD>{item.time}</TD>
+                </TR>
+              ))}
+            </tbody>
+          </GlassTable>
+        </Section>
+      )}
+    </Wrapper>
+  );
 }
+

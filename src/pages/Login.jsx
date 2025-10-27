@@ -2,19 +2,29 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import useAuthStore from '../store/useAuthStore'
 import { useNavigate } from 'react-router-dom'
+import {
+  LoginWrapper,
+  Title,
+  Form,
+  Label,
+  Input,
+  Button,
+  Error,
+} from '../styles/Login.styles'
+
+ 
 
 export default function Login() {
-  const { login } = useAuthStore()            
+  const { login } = useAuthStore()
   const [emailOrUserName, setEmailOrUserName] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
 
   const loginMutation = useMutation({
     mutationFn: ({ emailOrUserName, password }) =>
-      login(emailOrUserName, password), 
-    onSuccess: () => {
-      navigate('/users')
-    }
+      login(emailOrUserName, password),
+    onSuccess: () => navigate('/posts'),
+    onError: (err) => console.error('Login failed', err),
   })
 
   const onSubmit = (e) => {
@@ -23,28 +33,41 @@ export default function Login() {
   }
 
   return (
-    <div className="card">
-      <h2>login</h2>
-      <form onSubmit={onSubmit} className="form">
-        <label>UserName or email
-          <input value={emailOrUserName} onChange={e => setEmailOrUserName(e.target.value)} required />
-        </label>
-        <label>password
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-        </label>
+    <LoginWrapper>
+      <Title>ورود به حساب</Title>
+      <Form onSubmit={onSubmit}>
+        <Label>
+          نام کاربری یا ایمیل
+          <Input
+            value={emailOrUserName}
+            onChange={(e) => setEmailOrUserName(e.target.value)}
+            required
+          />
+        </Label>
+
+        <Label>
+          رمز عبور
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </Label>
 
         {loginMutation.isError && (
-          <p className="error">
+          <Error>
             {loginMutation.error?.response?.status === 401
-              ? 'user name or password wrong'
-              : 'not login'}
-          </p>
+              ? 'نام کاربری یا رمز اشتباه است'
+              : 'ورود ناموفق بود'}
+          </Error>
         )}
 
-        <button type="submit" disabled={loginMutation.isLoading}>
-          {loginMutation.isLoading ? '...' : 'login'}
-        </button>
-      </form>
-    </div>
+        <Button type="submit" disabled={loginMutation.isLoading}>
+          {loginMutation.isLoading ? 'در حال ورود...' : 'ورود'}
+        </Button>
+      </Form>
+    </LoginWrapper>
   )
 }
+
